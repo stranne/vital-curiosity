@@ -29,6 +29,14 @@
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
 
+.navbar__toggle {
+  margin-right: 12px;
+}
+
+.navbar__logo {
+  margin-right: 16px;
+}
+
 .avatar > .avatar__intro {
   & > :nth-child(1),
   & > :nth-child(2) {
