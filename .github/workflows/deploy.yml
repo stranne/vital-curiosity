@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+    schedule:
+      # Run at 00:00 UTC on the first of January to update copyright year
+      - cron: '0 0 1 1 *'
     # Review gh actions docs if you want to further define triggers, paths, etc
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#on
 
