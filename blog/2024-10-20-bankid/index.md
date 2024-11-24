@@ -88,7 +88,7 @@ BankID has [recommended text messages](https://developers.bankid.com/resources/u
 
 ## Implementing launch
 
-First, we use the User-Agent string to identify the user’s operating system and browser. This will be used for the [returnUrl](#returnUrl)-value and selecting which [URL-scheme](#url-schemes) to use.
+First, we use the User-Agent string to identify the user’s operating system and browser. This will be used for the [returnUrl](#returnurl)-value and selecting which [URI-scheme](#uri-schemes) to use.
 
 There are two ways of opening the BankID application.
 
