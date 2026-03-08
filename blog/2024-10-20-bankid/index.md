@@ -147,9 +147,11 @@ As an example, the return URL https://example.com/sign-in/ should be encoded to 
 
 ### Fragment identifier
 
-You may want to be able to get back to the homepage without having to reload the page again, which will break any client side logic currently running. This can be achieved by using a fragment identifier, adding a #-character at the end of the URL.
+For iOS return flows, use a fragment (`#`) in the return URL (for example, `https://example.com/sign-in/#`) so the user returns to the same page state without a full reload.
 
-If you have https://example.com/sign-in/, and want to create a redirectUrl for this page, use https://example.com/sign-in/#.
+Without the fragment, returning from the BankID app may trigger a full page load. In setups that rely on in-memory client state, that reload can interrupt the ongoing BankID flow.
+
+If your session cookie uses [`SameSite=Strict`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#strict), the return navigation may result in a new session depending on browser behavior and cookie policy, which can break ongoing signing state handling.
 
 ### Browser URI schemes
 
@@ -258,7 +260,7 @@ For desktop, it is straight forward. Use bankid:///?autostarttoken=[TOKEN] to op
 
 ## Changelog
 
-* 2026-03-08: Updated and corrected links.
+* 2026-03-08: Updated and corrected links. Clarified iOS return flow behavior and `SameSite=Strict` session implications under *Fragment identifier*.
 
 ## Disclaimer
 
