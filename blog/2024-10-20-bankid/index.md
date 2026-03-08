@@ -3,6 +3,8 @@ slug: launch-swedish-bankid-from-a-browser-using-autostart-token
 title: Launch Swedish BankID from a browser using autostart token
 authors: stranne
 tags: []
+last_update:
+  date: 2026-03-08
 ---
 
 TLDR: How to launch the Swedish BankID application on various browsers on different devices when you have an autostart-token.
@@ -15,13 +17,13 @@ A summary of my experience after working with a few BankID integrations. I have 
 
 Swedish BankID is a Swedish national digital identification and signing service provided by the largest banks in Sweden. There are on average 18 million identifications and signatures done each day with BankID ([April 2024](https://www.bankid.com/en)).
 
-* [Who can get BankID](https://www.bankid.com/en/privat/skaffa-bankid)
+* [Who can get BankID](https://www.bankid.com/en/individuals/get-bankid)
 * [Which banks provide BankID](https://www.bankid.com/en/privat/kontakt-privatpersoner)
 * [BankID application system requirements](https://support.bankid.com/en/technical-issues-and-problems/system-requirements)
 
 ## Integration basis
 
-To integrate BankID, you need a partnership with either one of [these banks](https://www.bankid.com/en/foretag/anslut-foeretag), or a vendor which integrates with BankID. Some vendors offer a GUI that manages most of the implementation on your behalf. This post, however, focuses on scenarios where you handle the end user interface yourself.
+To integrate BankID, you need a partnership with either one of [these banks](https://www.bankid.com/en/business/connect-business), or a vendor which integrates with BankID. Some vendors offer a GUI that manages most of the implementation on your behalf. This post, however, focuses on scenarios where you handle the end user interface yourself.
 
 To gain a deeper understanding of BankID’s technical details, check their [developer page](https://developers.bankid.com/getting-started/introduction).
 
@@ -30,8 +32,8 @@ Document sections of interest:
 * [Use cases](https://developers.bankid.com/getting-started/use-cases)
 * [Backend API references](https://developers.bankid.com/api-references/auth--sign/overview)
 * [Recommended text messages](https://developers.bankid.com/resources/user-messages)
-* [Frontend - Autostart](https://developers.bankid.com/getting-started/frontend/autostart)
-* [Frontend - QR code](https://developers.bankid.com/getting-started/frontend/qr-code)
+* [Frontend - Autostart](https://developers.bankid.com/how-to-guides/autostart)
+* [Frontend - QR code](https://developers.bankid.com/how-to-guides/qr-code)
 
 Condensed version of how the flow looks like, from a frontend perspective:
 
@@ -49,7 +51,7 @@ Usually there is a transaction fee for each BankID session created, so you might
 
 ### Testing
 
-BankID provide two environment for external use; production and test. For production you can get a personal BankID [through your bank](https://www.bankid.com/en/privat/skaffa-bankid). For test, you can create and download one, for any Swedish social security number, through [Demo Bank](https://demo.bankid.com/). More information available in [BankID developer documentation](https://developers.bankid.com/test-portal/test-information).
+BankID provide two environment for external use; production and test. For production you can get a personal BankID [through your bank](https://www.bankid.com/en/individuals/get-bankid). For test, you can create and download one, for any Swedish social security number, through [Demo Bank](https://developers.bankid.com/test-portal/testing). More information available in [BankID developer documentation](https://developers.bankid.com/test-portal/test-information).
 
 ### Same device vs other device
 
@@ -65,7 +67,7 @@ Going forward, this post will focus on how to open the BankID application on the
 
 ## Technical basis
 
-The [official documentation for implementing frontend](https://developers.bankid.com/getting-started/frontend/autostart) is light on detail in the *launching from a browser* section.
+The [official documentation for implementing frontend](https://developers.bankid.com/how-to-guides/autostart) is light on detail in the *launching from a browser* section.
 
 Next, we will explore how to create a same-device URL.
 
@@ -76,7 +78,7 @@ There are two ways, URI schemes, of launching the BankID application in a browse
 1. bankid:///?autostarttoken=[TOKEN]
 2. https://app.bankid.com/?autostarttoken=[TOKEN]
 
-BankID [states](https://developers.bankid.com/getting-started/frontend/autostart) that the first works for all browsers on PC, and the second for mobile devices such as iOS and Android. In practice, compatibility varies depending on the browser and operating system combination, necessitating custom configuration for optimal end user experience.
+BankID [states](https://developers.bankid.com/how-to-guides/autostart) that the first works for all browsers on PC, and the second for mobile devices such as iOS and Android. In practice, compatibility varies depending on the browser and operating system combination, necessitating custom configuration for optimal end user experience.
 
 If the BankID app fails to open when using the second option, [this page](https://app.bankid.com/) is displayed in the browser for the end user, which includes information for ends user on how to solve the issue. See below how to prevent this from happening consistently for certain operating systems and browsers.
 
@@ -84,7 +86,7 @@ The autostart token, [TOKEN] in examples, is a [UUID/GUID](https://en.wikipedia.
 
 ### UI texts
 
-BankID has [recommended text messages](https://developers.bankid.com/resources/user-messages) to be displayed for the end user in different states. In addition to these, you can also look at [test BankID](https://test.bankid.com/) as a source of inspiration for text that can be seen as more aligned with official messaging.
+BankID has [recommended text messages](https://developers.bankid.com/ui-resources/user-messages) to be displayed for the end user in different states. In addition to these, you can also look at [test BankID](https://test.bankid.com/) as a source of inspiration for text that can be seen as more aligned with official messaging.
 
 ## Implementing launch
 
@@ -112,7 +114,7 @@ iPad user agent examples:
 1. Mozilla/5.0 (**iPad**; U; CPU OS OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B367 Safari/531.21.10
 2. Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0 Safari/605.1.15
 
-To differentiate iPads from macOS devices based on their User-Agent, you can check if multi-touch is supported using the following JavaScript code: ``navigator && navigator.maxTouchPoints > 1``. This logic is also utilized in the [is-mobile NPM package](https://www.npmjs.com/package/is-mobile), which forms the basis for the [BankID sample code](https://github.com/BankID/SampleCode).
+To differentiate iPads from macOS devices based on their User-Agent, you can check if multi-touch is supported using the following JavaScript code: ``navigator && navigator.maxTouchPoints > 1``. This logic is also utilized in the [is-mobile NPM package](https://www.npmjs.com/package/is-mobile), which forms the basis for the [BankID sample code](https://github.com/BankID/SampleCode), which where archived in March 20'th of 2025.
 
 ### iframe
 
@@ -135,7 +137,7 @@ There are a few things to be aware of when creating this URL.
 
 For iOS you need a returnUrl value to handle the case with non Safari browsers. For other operating systems, this value can be left empty. If this value is missing, the end user will be left in the BankID app after completion on iOS. Note that the URL used as this value depends on which browser the user is using, see [below](#browser-uri-schemes) for details.
 
-It can also be set as a query parameter to the launch URL, `redirect=[REDIRECT]`, but this is now deprecated and should now be entered when requesting a new BankID session. If returnUrl is set when requesting a new session, any redirect query in the URL will be ignored. It is currently unclear how long the deprecated URL parameter will be supported, consult the [BankID technical documentation](https://developers.bankid.com/getting-started/frontend/autostart) for the latest information.
+It can also be set as a query parameter to the launch URL, `redirect=[REDIRECT]`, but this is now deprecated and should now be entered when requesting a new BankID session. If returnUrl is set when requesting a new session, any redirect query in the URL will be ignored. It is currently unclear how long the deprecated URL parameter will be supported, consult the [BankID technical documentation](https://developers.bankid.com/how-to-guides/autostart) for the latest information.
 
 #### URL encoded
 
@@ -151,7 +153,7 @@ If you have https://example.com/sign-in/, and want to create a redirectUrl for t
 
 ### Browser URI schemes
 
-iOS will default to the Safari browser. If a user is using Chrome on iOS, if not handle specifically, the user will get redirected to the specified page in Safari, instead of Chrome. Since that browser will not have access to the homepage’s session, it should fail processing the BankId session. Therefore, make sure to also include the URL scheme for the browser that is being used on iOS. You need to identify each browser, you want to support on iOS, and specify the correct URI scheme to open that specific browser when end user has completed the request in the BankID app. You can see statistics of browsers popularity for countries and operating system [here](https://radar.cloudflare.com/reports/browser-market-share-2024-q1#id-8-market-share-by-country-and-os).
+iOS will default to the Safari browser. If a user is using Chrome on iOS, if not handle specifically, the user will get redirected to the specified page in Safari, instead of Chrome. Since that browser will not have access to the homepage’s session, it should fail processing the BankId session. Therefore, make sure to also include the URL scheme for the browser that is being used on iOS. You need to identify each browser, you want to support on iOS, and specify the correct URI scheme to open that specific browser when end user has completed the request in the BankID app. You can see statistics of browsers popularity for countries and operating system [here](https://radar.cloudflare.com/reports/browser-market-share-2025-q4#id-8-market-share-by-country-and-os).
 
 
 Some browsers support URI scheme to open the app with the previous displayed web page. To ensure the expected result, specify the URL which the user should be redirected to. There is a risk that the user will be shown the [https://app.bankid.com/](https://app.bankid.com/) otherwise, and might not consider clicking back to get to your homepage again.
@@ -254,6 +256,10 @@ For desktop, it is straight forward. Use bankid:///?autostarttoken=[TOKEN] to op
 
 * bankid:///?autostarttoken=[TOKEN]
 
+## Changelog
+
+* 2026-03-08: Updated and corrected links.
+
 ## Disclaimer
 
 This information is provided as is. Follow your own judgment and official documentation.
@@ -265,12 +271,12 @@ This information is provided as is. Follow your own judgment and official docume
   * [System requirements](https://support.bankid.com/en/technical-issues-and-problems/system-requirements)
 * [Developer documentation](https://developers.bankid.com/)
   * [Backend API references](https://developers.bankid.com/api-references/auth--sign/overview)
-  * [Frontend: Autostart](https://developers.bankid.com/getting-started/frontend/autostart)
-  * [Frontend: QR code](https://developers.bankid.com/getting-started/frontend/qr-code)
+  * [Frontend: Autostart](https://developers.bankid.com/how-to-guides/autostart)
+  * [Frontend: QR code](https://developers.bankid.com/how-to-guides/qr-code)
   * [Recommended user messages](https://developers.bankid.com/resources/user-messages)
   * [Testing](https://developers.bankid.com/test-portal/test-information)
   * [Use cases](https://developers.bankid.com/getting-started/use-cases)
 * [Demo](https://www.bankid.com/demo)
-* [Demo Bank](https://demo.bankid.com/)
+* [Demo Bank](https://developers.bankid.com/test-portal/testing)
 * [GitHub](https://github.com/bankid)
-  * [Sample code](https://github.com/BankID/SampleCode)
+  * [Sample code (Archived)](https://github.com/BankID/SampleCode)

@@ -43,6 +43,8 @@ const config: Config = {
         blog: {
           routeBasePath: '/',
           showReadingTime: true,
+          showLastUpdateTime: true,
+          showLastUpdateAuthor: false,
           feedOptions: {
             type: ['rss', 'atom'],
             xslt: true,
@@ -57,6 +59,11 @@ const config: Config = {
         },
         googleTagManager: {
           containerId: 'GTM-MT52MSXM',
+        },
+        sitemap: {
+          lastmod: 'date',
+          changefreq: null,
+          priority: null,
         },
       } satisfies Preset.Options,
     ],
