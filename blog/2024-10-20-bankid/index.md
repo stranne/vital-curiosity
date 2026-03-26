@@ -114,7 +114,7 @@ iPad user agent examples:
 1. Mozilla/5.0 (**iPad**; U; CPU OS OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B367 Safari/531.21.10
 2. Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0 Safari/605.1.15
 
-To differentiate iPads from macOS devices based on their User-Agent, you can check if multi-touch is supported using the following JavaScript code: ``navigator && navigator.maxTouchPoints > 1``. This logic is also utilized in the [is-mobile NPM package](https://www.npmjs.com/package/is-mobile), which forms the basis for the [BankID sample code](https://github.com/BankID/SampleCode), which where archived in March 20'th of 2025.
+To differentiate iPads from macOS devices based on their User-Agent, you can check if multi-touch is supported using the following JavaScript code: ``navigator && navigator.maxTouchPoints > 1``. This logic is also utilized in the [is-mobile NPM package](https://www.npmjs.com/package/is-mobile), which forms the basis for the [BankID sample code](https://github.com/BankID/SampleCode), which were archived in March 20'th of 2025.
 
 ### iframe
 
