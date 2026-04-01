@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page.title }} | {{ config.title }}{% endblock %}
+{% block description %}{{ page.description | default(value=config.description) }}{% endblock %}
+
+{% block content %}
+<article class="post">
+    <header class="post-header glass-subtle">
+        <a href="/" class="back-link">&larr; Back to posts</a>
+        <h1 class="post-title">{{ page.title }}</h1>
+        <div class="post-meta">
+            <span class="post-author">{{ config.extra.author_name }}</span>
+            <time datetime="{{ page.date | date(format='%Y-%m-%d') }}">
+                {{ page.date | date(format='%B %e, %Y') }}
+            </time>
+            {% if page.reading_time %}
+                <span class="reading-time">{{ page.reading_time }} min read</span>
+            {% endif %}
+            {% if page.word_count %}
+                <span class="word-count">{{ page.word_count }} words</span>
+            {% endif %}
+        </div>
+        {% if page.taxonomies.tags %}
+            <div class="post-tags">
+                {% for tag in page.taxonomies.tags %}
+                    <a href="/tags/{{ tag | slugify }}/" class="tag">#{{ tag }}</a>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </header>
+
+    <div class="post-layout">
+        <div class="post-content glass">
+            {% if page.description %}
+                <div class="post-tldr">
+                    <strong>TLDR:</strong> {{ page.description }}
+                </div>
+            {% endif %}
+
+            {{ page.content | safe }}
+        </div>
+
+        {% if page.toc %}
+            <aside class="toc-sidebar">
+                <nav class="toc glass" aria-label="Table of Contents">
+                    <h2 class="toc-title">Contents</h2>
+                    <ul class="toc-list">
+                        {% for h2 in page.toc %}
+                            <li>
+                                <a href="#{{ h2.id }}">{{ h2.title }}</a>
+                                {% if h2.children %}
+                                    <ul>
+                                        {% for h3 in h2.children %}
+                                            <li>
+                                                <a href="#{{ h3.id }}">{{ h3.title }}</a>
+                                                {% if h3.children %}
+                                                    <ul>
+                                                        {% for h4 in h3.children %}
+                                                            <li><a href="#{{ h4.id }}">{{ h4.title }}</a></li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                {% endif %}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </nav>
+            </aside>
+        {% endif %}
+    </div>
+</article>
+
+{% if page.toc %}
+<script src="/js/toc.js" defer></script>
+{% endif %}
+{% endblock %}

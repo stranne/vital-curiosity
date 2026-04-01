@@ -1,0 +1,32 @@
+base_url = "https://blog.stranne.se"
+title = "Vital Curiosity"
+description = "Curiosity driven learning"
+default_language = "en"
+
+compile_sass = true
+minify_html = true
+generate_feeds = true
+feed_filenames = ["atom.xml", "rss.xml"]
+
+taxonomies = [
+    { name = "tags", feed = true },
+]
+
+[markdown]
+render_emoji = true
+external_links_target_blank = true
+external_links_no_follow = false
+external_links_no_referrer = true
+smart_punctuation = true
+[markdown.highlighting]
+enabled = true
+theme = "material-theme-ocean"
+
+[slugify]
+paths = "on"
+anchors = "on"
+
+[extra]
+author_name = "Olof Stranne"
+author_role = "Software Developer"
+background_image = "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=80"
