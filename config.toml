@@ -3,6 +3,7 @@ title = "Vital Curiosity"
 description = "Curiosity driven learning"
 default_language = "en"
 
+ignored_content = ["*.png", "*.jpg", "*.jpeg"]
 compile_sass = true
 minify_html = true
 generate_feeds = true
