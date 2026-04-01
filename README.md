@@ -1,41 +1,25 @@
-# Website
+# Vital Curiosity
 
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
+Personal blog built with [Zola](https://www.getzola.org/), deployed to GitHub Pages.
 
-### Installation
+## Local development
 
-```
-$ yarn
-```
+Install Zola ([instructions](https://www.getzola.org/documentation/getting-started/installation/)), then:
 
-### Local Development
-
-```
-$ yarn start
+```sh
+zola serve
 ```
 
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
+The site will be available at `http://127.0.0.1:1111/`.
 
-### Build
+## Build
 
-```
-$ yarn build
-```
-
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
-
-### Deployment
-
-Using SSH:
-
-```
-$ USE_SSH=true yarn deploy
+```sh
+zola build
 ```
 
-Not using SSH:
+Static output is generated in the `public/` directory.
 
-```
-$ GIT_USER=<Your GitHub username> yarn deploy
-```
+## Deployment
 
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+Pushes to `main` trigger automatic deployment via GitHub Actions.

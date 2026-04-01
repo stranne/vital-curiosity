@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ config.title }}{% endblock %}</title>
+    <meta name="description" content="{% block description %}{{ config.description }}{% endblock %}">
+
+    <link rel="icon" href="/img/logo.svg" type="image/svg+xml">
+    <link rel="alternate" type="application/atom+xml" title="Atom Feed" href="/atom.xml">
+    <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/rss.xml">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=Karla:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="bg-layer" aria-hidden="true">
+        {% if config.extra.background_image %}
+            <img src="{{ config.extra.background_image }}" alt="" class="bg-image" loading="eager">
+        {% endif %}
+        <div class="bg-overlay"></div>
+    </div>
+
+    <header class="site-header glass">
+        <nav class="site-nav">
+            <a href="/" class="site-brand">
+                <img src="/img/logo.svg" alt="" class="site-logo" width="28" height="28">
+                <span class="site-name">{{ config.title }}</span>
+            </a>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Posts</a>
+                <a href="/tags/" class="nav-link">Tags</a>
+                <a href="/atom.xml" class="nav-link" title="Feed">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/>
+                    </svg>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="site-main">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer glass">
+        <p>&copy; {{ now() | date(format="%Y") }} {{ config.extra.author_name }}. Built with <a href="https://www.getzola.org/" target="_blank" rel="noopener">Zola</a>.</p>
+    </footer>
+</body>
+</html>

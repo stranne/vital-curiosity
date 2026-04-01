@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}{{ config.title }} - {{ config.description }}{% endblock %}
+
+{% block content %}
+<div class="hero glass-subtle">
+    <h1 class="hero-title">{{ config.title }}</h1>
+    <p class="hero-tagline">{{ config.description }}</p>
+</div>
+
+<section class="post-list">
+    {% set section = get_section(path="_index.md") %}
+
+    {% for year, posts in section.pages | group_by(attribute="year") %}
+        <div class="year-group">
+            <h2 class="year-label">{{ year }}</h2>
+            {% for page in posts %}
+                <article class="post-card glass">
+                    <a href="{{ page.permalink }}" class="post-card-link">
+                        <div class="post-card-meta">
+                            <time datetime="{{ page.date | date(format='%Y-%m-%d') }}">
+                                {{ page.date | date(format='%b %d') }}
+                            </time>
+                            {% if page.reading_time %}
+                                <span class="reading-time">{{ page.reading_time }} min read</span>
+                            {% endif %}
+                        </div>
+                        <h3 class="post-card-title">{{ page.title }}</h3>
+                        {% if page.description %}
+                            <p class="post-card-desc">{{ page.description }}</p>
+                        {% endif %}
+                        {% if page.taxonomies.tags %}
+                            <div class="post-card-tags">
+                                {% for tag in page.taxonomies.tags %}
+                                    <span class="tag">#{{ tag }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </a>
+                </article>
+            {% endfor %}
+        </div>
+    {% endfor %}
+</section>
+{% endblock %}
