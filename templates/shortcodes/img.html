@@ -1,5 +1,0 @@
-{% set dir = page.relative_path | replace(from="index.md", to="") %}
-{% set image = resize_image(path=dir ~ src, width=400, op="fit_width", quality=85) %}
-<a href="{{ get_url(path=dir ~ src) }}" target="_blank">
-    <img src="{{ image.url }}" alt="{{ alt }}" width="{{ image.width }}" height="{{ image.height }}" loading="lazy">
-</a>

@@ -1,7 +1,7 @@
 +++
 title = "Launch Swedish BankID from a browser using autostart token"
 date = 2024-10-20
-updated = 2026-03-08
+updated = 2026-04-01
 description = "How to launch the Swedish BankID application on various browsers on different devices when you have an autostart-token."
 
 [taxonomies]
@@ -196,50 +196,45 @@ iOS with Edge:
 
 BankID's developer documentation states that `https://app.bankid.com/` URL scheme should be used for Android devices. Signicat, an identity solution provider, [states](https://developer.signicat.com/identity-methods/sbid/integration-guide/auth-rest-api/headless/#field-descriptions-1) that modern Android should use the URI, while Android 4 & 5 should use `bankid://` URI scheme instead.
 
-Different browsers behave differently on Android. Therefore, testing browser behavior is crucial for ensuring the consistency launching of bankID application. See the table comparison below, tested on Android 11 (as of October 2024).
+### Browser details
 
-Legends:
+Different browsers behave differently on Android. Therefore, testing browser behavior is crucial for ensuring the consistency launching of bankID application. See the table comparison below, tested on Android 11 (as of October 2024). The launch method (direct link vs `window.location`) was tested and produced identical results — only the URI scheme matters.
 
-- 🖱️ - Direct link
-- ⏰ - window.location
-- 🏦 - `bankid://`
-- 🔗 - `https://app.bankid.com/`
-
-| Browser | 🖱️ - 🏦 | 🖱️ - 🔗 | ⏰ - 🏦 | ⏰ - 🔗 |
-|---|---|---|---|---|
-| [Chrome](https://play.google.com/store/apps/details?id=com.android.chrome) | ✅ | ✅ | ✅ | ✅ |
-| [Firefox](https://play.google.com/store/apps/details?id=org.mozilla.firefox) | ✅ 💬 <sup>[1](@/launch-swedish-bankid-from-a-browser-using-autostart-token/index.md#firefox)</sup> | ✅ 💬 <sup>[1](@/launch-swedish-bankid-from-a-browser-using-autostart-token/index.md#firefox)</sup> | ✅ 💬 <sup>[1](@/launch-swedish-bankid-from-a-browser-using-autostart-token/index.md#firefox)</sup> | ✅ 💬 <sup>[1](@/launch-swedish-bankid-from-a-browser-using-autostart-token/index.md#firefox)</sup> |
-| [Edge](https://play.google.com/store/apps/details?id=com.microsoft.emmx) | ✅ | ⚠️ 💬 <sup>[2](@/launch-swedish-bankid-from-a-browser-using-autostart-token/index.md#edge)</sup> | ✅ | ⚠️ 💬 <sup>[2](@/launch-swedish-bankid-from-a-browser-using-autostart-token/index.md#edge)</sup> |
-| [DuckDuckGo](https://play.google.com/store/apps/details?id=com.duckduckgo.mobile.android) | ✅ 💬 <sup>[3](@/launch-swedish-bankid-from-a-browser-using-autostart-token/index.md#duckduckgo)</sup> | ⚠️ 💬 <sup>[3](@/launch-swedish-bankid-from-a-browser-using-autostart-token/index.md#duckduckgo)</sup> | ✅ 💬 <sup>[3](@/launch-swedish-bankid-from-a-browser-using-autostart-token/index.md#duckduckgo)</sup> | ⚠️ 💬 <sup>[3](@/launch-swedish-bankid-from-a-browser-using-autostart-token/index.md#duckduckgo)</sup> |
-| [Samsung Internet Browser](https://play.google.com/store/apps/details?id=com.sec.android.app.sbrowser) | ✅ | ❌ <sup>[4](@/launch-swedish-bankid-from-a-browser-using-autostart-token/index.md#samsung-internet-browser)</sup> | ✅ | ❌ <sup>[4](@/launch-swedish-bankid-from-a-browser-using-autostart-token/index.md#samsung-internet-browser)</sup> |
-| [Opera](https://play.google.com/store/apps/details?id=com.opera.browser) | ✅ | ✅ | ✅ | ✅ |
-| [Brave](https://play.google.com/store/apps/details?id=com.brave.browser) | ✅ | ✅ | ✅ | ✅ |
+| Browser | `bankid://` | `https://app.bankid.com/` |
+|---|---|---|
+| [Chrome](https://play.google.com/store/apps/details?id=com.android.chrome) | ✅ | ✅ |
+| [Firefox](https://play.google.com/store/apps/details?id=org.mozilla.firefox) | ✅ [Dialog](@/launch-swedish-bankid-from-a-browser-using-autostart-token/index.md#firefox) | ✅ [Dialog](@/launch-swedish-bankid-from-a-browser-using-autostart-token/index.md#firefox) |
+| [Edge](https://play.google.com/store/apps/details?id=com.microsoft.emmx) | ✅ | ⚠️ [Bottom dialog](@/launch-swedish-bankid-from-a-browser-using-autostart-token/index.md#edge) |
+| [DuckDuckGo](https://play.google.com/store/apps/details?id=com.duckduckgo.mobile.android) | ✅ [Dialog](@/launch-swedish-bankid-from-a-browser-using-autostart-token/index.md#duckduckgo) | ⚠️ [Bottom dialog](@/launch-swedish-bankid-from-a-browser-using-autostart-token/index.md#duckduckgo) |
+| [Samsung Internet](https://play.google.com/store/apps/details?id=com.sec.android.app.sbrowser) | ✅ | ❌ [Not supported](@/launch-swedish-bankid-from-a-browser-using-autostart-token/index.md#samsung-internet-browser) |
+| [Opera](https://play.google.com/store/apps/details?id=com.opera.browser) | ✅ | ✅ |
+| [Brave](https://play.google.com/store/apps/details?id=com.brave.browser) | ✅ | ✅ |
 
 Use [this simple test tool](https://stranne.github.io/swedish-bankid-launch-tester/) to evaluate different devices and their browsers.
 
-### Firefox
+#### Firefox
 
+{% figure_detail(src="screenshot_android_firefox.png", alt="Android Firefox prompt dialog") %}
 Same behavior for all combinations, where the user is prompted. If user declines, nothing happens for `bankid://`, and the site is shown for `https://app.bankid.com/`.
+{% end %}
 
-{{ img(src="screenshot_android_firefox.png", alt="Android Firefox prompt dialog") }}
+#### Edge
 
-### Edge
-
+{% figure_detail(src="screenshot_android_edge.png", alt="Android Edge prompt dialog") %}
 When using URL scheme `https://app.bankid.com/`, the user is prompted and asked if they would like to open the external app until they select remember.
+{% end %}
 
-{{ img(src="screenshot_android_edge.png", alt="Android Edge prompt dialog") }}
+#### DuckDuckGo
 
-### DuckDuckGo
-
+{% figure_detail(src="screenshot_android_duckduckgo_1.png", alt="Android DuckDuckGo prompt for bankid URI") %}
 There is a prompt displayed for `bankid://` URI Scheme.
+{% end %}
 
-{{ img(src="screenshot_android_duckduckgo_1.png", alt="Android DuckDuckGo prompt for bankid URI") }}
-
+{% figure_detail(src="screenshot_android_duckduckgo_2.png", alt="Android DuckDuckGo prompt for https URI") %}
 For URL scheme `https://app.bankid.com/` the user is prompted with a discrete options at the bottom of the `https://app.bankid.com/` page, as seen below.
+{% end %}
 
-{{ img(src="screenshot_android_duckduckgo_2.png", alt="Android DuckDuckGo prompt for https URI") }}
-
-### Samsung Internet Browser
+#### Samsung Internet Browser
 
 This browser does not support `https://app.bankid.com/` URL scheme. It only displays the page without any option to open the external BankID app. Only use `bankid://` for this browser.
 
@@ -258,6 +253,7 @@ For desktop, it is straight forward. Use `bankid:///?autostarttoken=[TOKEN]` to 
 
 ## Changelog
 
+- 2026-04-01: Simplified the Android browser compatibility table and restructured browser-specific details under *Open on Android*.
 - 2026-03-08: Updated and corrected links. Clarified iOS return flow behavior and `SameSite=Strict` session implications under *Fragment identifier*.
 
 ## Disclaimer
