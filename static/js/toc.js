@@ -25,7 +25,10 @@
         tocLinks.forEach(function (link) { link.classList.remove('active'); });
         if (active) {
             var link = document.querySelector('.toc-list a[href="#' + active.id + '"]');
-            if (link) link.classList.add('active');
+            if (link) {
+                link.classList.add('active');
+                link.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            }
         }
         ticking = false;
     }
