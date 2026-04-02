@@ -3,6 +3,13 @@
 {% block title %}{{ page.title }} | {{ config.title }}{% endblock %}
 {% block description %}{{ page.description | default(value=config.description) }}{% endblock %}
 
+{% block scripts %}
+{% if page.toc %}
+<script src="/js/toc.js" defer></script>
+{% endif %}
+<script src="/js/lightbox.js" defer></script>
+{% endblock %}
+
 {% block content %}
 <article class="post">
     <header class="post-header glass-subtle">
@@ -69,9 +76,4 @@
         {% endif %}
     </div>
 </article>
-
-{% if page.toc %}
-<script src="/js/toc.js" defer></script>
-{% endif %}
-<script src="/js/lightbox.js" defer></script>
 {% endblock %}

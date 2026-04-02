@@ -11,6 +11,11 @@
     <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="/rss.xml">
 
     <link rel="stylesheet" href="/style.css">
+
+    {% if config.extra.umami_website_id %}
+        <script defer src="https://cloud.umami.is/script.js" data-website-id="{{ config.extra.umami_website_id }}"></script>
+    {% endif %}
+    {% block scripts %}{% endblock %}
 </head>
 <body>
     <div class="bg-layer" aria-hidden="true">
