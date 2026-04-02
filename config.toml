@@ -30,4 +30,4 @@ anchors = "on"
 [extra]
 author_name = "Olof Stranne"
 author_role = "Software Developer"
-background_image = "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=80"
+background_image = "/img/bg.jpg"
