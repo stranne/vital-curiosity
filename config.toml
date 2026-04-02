@@ -31,3 +31,5 @@ anchors = "on"
 author_name = "Olof Stranne"
 author_role = "Software Developer"
 background_image = "/img/bg.jpg"
+# Umami Cloud analytics - set website_id to enable, leave empty to disable
+umami_website_id = "63af043f-ba14-4102-8376-07ca8e32eac5"
