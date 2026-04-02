@@ -476,31 +476,17 @@ a {
     align-items: start;
 }
 
-@media (max-width: 64rem) {
-    .post-layout {
-        grid-template-columns: 1fr;
-    }
-
-    .toc {
-        position: relative !important;
-        top: auto !important;
-        max-height: none;
-    }
-}
-
 // --------------------------------------------------------------------------
-// TOC sidebar
+// TOC navigation
 // --------------------------------------------------------------------------
 
-.toc-sidebar {
+.toc-nav {
+    grid-column: 2;
+    grid-row: 1;
     position: sticky;
     top: 5.5rem;
     max-height: calc(100vh - 7rem);
-}
-
-.toc {
     overflow-y: auto;
-    max-height: inherit;
     padding: 1.25rem;
     scrollbar-width: thin;
     scrollbar-color: var(--scrollbar-thumb) transparent;
@@ -514,6 +500,62 @@ a {
     text-transform: uppercase;
     letter-spacing: 0.08em;
     margin-bottom: 0.75rem;
+}
+
+@media (max-width: 64rem) {
+    .post-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .toc-nav {
+        position: relative;
+        top: auto;
+        max-height: none;
+        overflow: visible;
+        padding: 0;
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .post-content {
+        grid-row: 2;
+    }
+
+    .toc-title {
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.25rem;
+        color: var(--text-secondary);
+        margin-bottom: 0;
+
+        &::after {
+            content: '▸';
+            opacity: 0.6;
+        }
+    }
+
+    .toc-list {
+        display: none;
+        padding: 0 1.25rem;
+    }
+
+    .toc-nav[data-open] {
+        padding-bottom: 1rem;
+
+        .toc-title {
+            margin-bottom: 0.5rem;
+
+            &::after {
+                content: '▾';
+            }
+        }
+
+        .toc-list {
+            display: block;
+        }
+    }
 }
 
 .toc-list {
@@ -551,6 +593,8 @@ a {
 // --------------------------------------------------------------------------
 
 .post-content {
+    grid-column: 1;
+    grid-row: 1;
     padding: 2rem 2.5rem 3rem;
     overflow: hidden;
 }

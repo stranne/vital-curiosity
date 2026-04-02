@@ -1,18 +1,26 @@
 (function () {
-    var tocLinks = document.querySelectorAll('.toc-list a');
+    var tocNav = document.querySelector('.toc-nav');
+    if (!tocNav) return;
+
+    var tocLinks = tocNav.querySelectorAll('.toc-list a');
     var headings = [];
+    var linkByHeadingId = {};
     tocLinks.forEach(function (link) {
         var id = link.getAttribute('href').slice(1);
         var el = document.getElementById(id);
-        if (el) headings.push(el);
+        if (el) {
+            headings.push(el);
+            linkByHeadingId[id] = link;
+        }
     });
     if (headings.length === 0) return;
 
-    var scrollOffset = 100; // accounts for sticky header
+    var scrollOffset = 100;
     var ticking = false;
+    var currentActive = null;
+    var desktopQuery = window.matchMedia('(min-width: 64rem)');
 
     function update() {
-        // Find the last heading that has scrolled past the offset
         var active = null;
         for (var i = 0; i < headings.length; i++) {
             if (headings[i].getBoundingClientRect().top <= scrollOffset) {
@@ -22,12 +30,15 @@
             }
         }
 
+        if (active === currentActive) { ticking = false; return; }
+        currentActive = active;
+
         tocLinks.forEach(function (link) { link.classList.remove('active'); });
-        if (active) {
-            var link = document.querySelector('.toc-list a[href="#' + active.id + '"]');
-            if (link) {
-                link.classList.add('active');
-                link.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        if (active && linkByHeadingId[active.id]) {
+            var link = linkByHeadingId[active.id];
+            link.classList.add('active');
+            if (desktopQuery.matches) {
+                link.scrollIntoView({ block: 'nearest', behavior: 'auto' });
             }
         }
         ticking = false;
@@ -39,6 +50,24 @@
             ticking = true;
         }
     }, { passive: true });
+
+    // Mobile TOC toggle
+    var tocTitle = tocNav.querySelector('.toc-title');
+    if (tocTitle) {
+        function toggle() {
+            if (!desktopQuery.matches) {
+                tocNav.toggleAttribute('data-open');
+                tocTitle.setAttribute('aria-expanded', tocNav.hasAttribute('data-open'));
+            }
+        }
+        tocTitle.addEventListener('click', toggle);
+        tocTitle.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggle();
+            }
+        });
+    }
 
     update();
 })();
