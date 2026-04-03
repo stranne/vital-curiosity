@@ -2,7 +2,7 @@
 {% set thumb = resize_image(path=dir ~ src, width=120, op="fit_width", quality=80, format="webp") %}
 {% set full = resize_image(path=dir ~ src, width=800, op="fit_width", quality=85, format="webp") %}
 <div class="figure-detail glass-subtle">
-    <a href="{{ full.url }}" class="lightbox-trigger figure-detail-img">
+    <a href="{{ full.url }}" class="lightbox-trigger figure-detail-img" aria-label="View larger image: {{ alt }}">
         <img src="{{ thumb.url }}" alt="{{ alt }}" width="{{ thumb.width }}" height="{{ thumb.height }}" loading="lazy" class="post-thumb">
     </a>
     <div class="figure-detail-text">{{ body | markdown | safe }}</div>
