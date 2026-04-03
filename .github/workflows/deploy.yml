@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+  schedule:
+    # Run at 00:00 UTC on the first of January to update copyright year
+    - cron: '0 0 1 1 *'
 
 permissions:
   contents: write
