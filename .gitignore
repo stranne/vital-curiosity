@@ -9,3 +9,9 @@ Thumbs.db
 # Editor temp files
 *.swp
 *~
+
+# Playwright MCP
+.playwright-mcp/
+
+# Local config
+*.local.json
