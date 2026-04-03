@@ -2,6 +2,7 @@ base_url = "https://blog.stranne.se"
 title = "Vital Curiosity"
 description = "Curiosity driven learning"
 default_language = "en"
+author = "Olof Stranne"
 
 ignored_content = ["*.png", "*.jpg", "*.jpeg"]
 compile_sass = true
