@@ -49,34 +49,6 @@
     --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
 
-// Light mode adjustments
-@media (prefers-color-scheme: light) {
-    :root {
-        --bg-deep: #e8ecf4;
-        --bg-mid: #dde3ee;
-        --glass-bg: rgba(255, 255, 255, 0.55);
-        --glass-bg-hover: rgba(255, 255, 255, 0.7);
-        --glass-border: rgba(255, 255, 255, 0.5);
-        --glass-border-hover: rgba(255, 255, 255, 0.65);
-        --glass-subtle-bg: rgba(255, 255, 255, 0.3);
-
-        --text-primary: rgba(15, 23, 42, 0.92);
-        --text-secondary: rgba(15, 23, 42, 0.6);
-        --text-muted: rgba(15, 23, 42, 0.38);
-
-        --accent: #2563eb;
-        --accent-warm: #d97706;
-        --accent-glow: rgba(37, 99, 235, 0.1);
-
-        --code-bg: rgba(0, 0, 0, 0.06);
-        --tldr-bg: rgba(37, 99, 235, 0.06);
-        --tldr-border: rgba(37, 99, 235, 0.25);
-        --table-header-bg: rgba(0, 0, 0, 0.04);
-        --table-row-hover: rgba(0, 0, 0, 0.02);
-        --scrollbar-thumb: rgba(0, 0, 0, 0.15);
-    }
-}
-
 // --------------------------------------------------------------------------
 // Reset & Base
 // --------------------------------------------------------------------------
@@ -88,6 +60,7 @@
 }
 
 html {
+    color-scheme: dark;
     scroll-behavior: smooth;
     scrollbar-color: var(--scrollbar-thumb) transparent;
     scroll-padding-top: 5rem;
@@ -133,13 +106,6 @@ a {
     filter: saturate(0.6);
 }
 
-@media (prefers-color-scheme: light) {
-    .bg-image {
-        opacity: 0.15;
-        filter: saturate(0.4) brightness(1.2);
-    }
-}
-
 .bg-overlay {
     position: absolute;
     inset: 0;
@@ -147,15 +113,6 @@ a {
         radial-gradient(ellipse at 20% 0%, rgba(100, 181, 246, 0.08) 0%, transparent 60%),
         radial-gradient(ellipse at 80% 100%, rgba(240, 160, 96, 0.06) 0%, transparent 60%),
         linear-gradient(180deg, rgba(10, 14, 26, 0.4) 0%, rgba(10, 14, 26, 0.7) 100%);
-}
-
-@media (prefers-color-scheme: light) {
-    .bg-overlay {
-        background:
-            radial-gradient(ellipse at 20% 0%, rgba(37, 99, 235, 0.05) 0%, transparent 60%),
-            radial-gradient(ellipse at 80% 100%, rgba(217, 119, 6, 0.04) 0%, transparent 60%),
-            linear-gradient(180deg, rgba(232, 236, 244, 0.5) 0%, rgba(232, 236, 244, 0.8) 100%);
-    }
 }
 
 // --------------------------------------------------------------------------
@@ -213,10 +170,10 @@ a {
     &:hover {
         color: var(--accent);
     }
-}
 
-.site-logo {
-    border-radius: 6px;
+    .site-logo {
+        transition: color 0.2s ease;
+    }
 }
 
 .nav-links {
@@ -269,7 +226,7 @@ a {
     letter-spacing: -0.03em;
     line-height: 1.15;
     margin-bottom: 0.5rem;
-    background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 100%);
+    background: linear-gradient(90deg, #3a7abd 0%, #7cb8e8 25%, #c8dff2 50%, #7cb8e8 75%, #3a7abd 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
