@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://blog.stranne.se/</loc>
+    </url>
+    <url>
+        <loc>https://blog.stranne.se/launch-swedish-bankid-from-a-browser-using-autostart-token/</loc>
+        <lastmod>2026-04-01</lastmod>
+    </url>
+    <url>
+        <loc>https://blog.stranne.se/page/1/</loc>
+    </url>
+    <url>
+        <loc>https://blog.stranne.se/tags/</loc>
+    </url>
+    <url>
+        <loc>https://blog.stranne.se/tags/bankid/</loc>
+    </url>
+    <url>
+        <loc>https://blog.stranne.se/tags/frontend/</loc>
+    </url>
+    <url>
+        <loc>https://blog.stranne.se/tags/integration/</loc>
+    </url>
+</urlset>

@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+      <title>Vital Curiosity - frontend</title>
+      <link>https://blog.stranne.se</link>
+      <description>Curiosity driven learning</description>
+      <generator>Zola</generator>
+      <language>en</language>
+      <atom:link href="https://blog.stranne.se/tags/frontend/rss.xml" rel="self" type="application/rss+xml"/>
+      <lastBuildDate>Wed, 01 Apr 2026 00:00:00 +0000</lastBuildDate>
+      <item>
+          <title>Launch Swedish BankID from a browser using autostart token</title>
+          <pubDate>Sun, 20 Oct 2024 00:00:00 +0000</pubDate>
+          <author>Olof Stranne</author>
+          <link>https://blog.stranne.se/launch-swedish-bankid-from-a-browser-using-autostart-token/</link>
+          <guid>https://blog.stranne.se/launch-swedish-bankid-from-a-browser-using-autostart-token/</guid>
+          <description xml:base="https://blog.stranne.se/launch-swedish-bankid-from-a-browser-using-autostart-token/">&lt;p&gt;A summary of my experience after working with a few BankID integrations. I have found that the official documentation is a bit light in certain areas. This blog post provides the insights I wish I had when I began working with BankID.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;background&quot;&gt;Background&lt;&#x2F;h2&gt;
+&lt;p&gt;Swedish BankID is a Swedish national digital identification and signing service provided by the largest banks in Sweden. There are on average 18 million identifications and signatures done each day with BankID (&lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.bankid.com&#x2F;en&quot;&gt;April 2024&lt;&#x2F;a&gt;).&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.bankid.com&#x2F;en&#x2F;individuals&#x2F;get-bankid&quot;&gt;Who can get BankID&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.bankid.com&#x2F;en&#x2F;privat&#x2F;kontakt-privatpersoner&quot;&gt;Which banks provide BankID&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;support.bankid.com&#x2F;en&#x2F;technical-issues-and-problems&#x2F;system-requirements&quot;&gt;BankID application system requirements&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;integration-basis&quot;&gt;Integration basis&lt;&#x2F;h2&gt;
+&lt;p&gt;To integrate BankID, you need a partnership with either one of &lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.bankid.com&#x2F;en&#x2F;business&#x2F;connect-business&quot;&gt;these banks&lt;&#x2F;a&gt;, or a vendor which integrates with BankID. Some vendors offer a GUI that manages most of the implementation on your behalf. This post, however, focuses on scenarios where you handle the end user interface yourself.&lt;&#x2F;p&gt;
+&lt;p&gt;To gain a deeper understanding of BankID’s technical details, check their &lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;developers.bankid.com&#x2F;getting-started&#x2F;introduction&quot;&gt;developer page&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;Document sections of interest:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;developers.bankid.com&#x2F;getting-started&#x2F;use-cases&quot;&gt;Use cases&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;developers.bankid.com&#x2F;api-references&#x2F;auth--sign&#x2F;overview&quot;&gt;Backend API references&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;developers.bankid.com&#x2F;resources&#x2F;user-messages&quot;&gt;Recommended text messages&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;developers.bankid.com&#x2F;how-to-guides&#x2F;autostart&quot;&gt;Frontend - Autostart&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;developers.bankid.com&#x2F;how-to-guides&#x2F;qr-code&quot;&gt;Frontend - QR code&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Condensed version of how the flow looks like, from a frontend perspective:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;Homepage calls an endpoint to make a request to get a session&lt;&#x2F;li&gt;
+&lt;li&gt;Homepage keeps polling for the latest information repeatedly, around each second&lt;&#x2F;li&gt;
+&lt;li&gt;User clicks a button, or scans a QR code, on the homepage&lt;&#x2F;li&gt;
+&lt;li&gt;Polling status will update based on user’s state in the process. Interaction within the BankID app affects the state. State is used to select which message is displayed on the homepage.&lt;&#x2F;li&gt;
+&lt;li&gt;When complete, backend should process and respond with updated polling message, where the homepage can show a message or redirect to another page&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h3 id=&quot;complementing-thoughts&quot;&gt;Complementing thoughts&lt;&#x2F;h3&gt;
+&lt;p&gt;When authenticating or signing you may want to lock a session to a specific social security number. For example, a specific individual who needs to sign something. When providing a social security number when creating a new session, the BankID application will only allow that person to complete the request, filtering out any other BankIDs available on the device, for example if multiple people are sharing a tablet.&lt;&#x2F;p&gt;
+&lt;p&gt;Usually there is a transaction fee for each BankID session created, so you might want to avoid always creating a BankID session when the user lands on a specific page and wait until they have integrated with the page before creating it. To prevent web crawlers or other scanning tools from initiate sessions, configure your logic to not trigger new BankID sessions when a page is loaded. If using automatic scanning tools which interact with the webpage, make sure to configure them to avoid them starting new session. For example, blocking the endpoint to request a new session.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;testing&quot;&gt;Testing&lt;&#x2F;h3&gt;
+&lt;p&gt;BankID provide two environment for external use; production and test. For production you can get a personal BankID &lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.bankid.com&#x2F;en&#x2F;individuals&#x2F;get-bankid&quot;&gt;through your bank&lt;&#x2F;a&gt;. For test, you can create and download one, for any Swedish social security number, through &lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;developers.bankid.com&#x2F;test-portal&#x2F;testing&quot;&gt;Demo Bank&lt;&#x2F;a&gt;. More information available in &lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;developers.bankid.com&#x2F;test-portal&#x2F;test-information&quot;&gt;BankID developer documentation&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;same-device-vs-other-device&quot;&gt;Same device vs other device&lt;&#x2F;h3&gt;
+&lt;p&gt;An end user can use BankID on the same device, by clicking on a button, or through scanning a QR code, displayed on the homepage, with the Mobile BankID app on a mobile device. If the user is on a desktop’s browser, and does not have BankID app installed on that machine, they may want to use their mobile device instead.&lt;&#x2F;p&gt;
+&lt;p&gt;The browser can generate QR codes, for example through an NPM package. An alternative is to let the backend generate a SVG image and return the text for it, leaving it up for the client to only display it, keeping the implementation on the client side simple.&lt;&#x2F;p&gt;
+&lt;p&gt;The QR code needs to change every 1-2 seconds, or it will become invalid when the end user scans it. This security measure prevents unauthorized use by ensuring that the QR code expires quickly, making it difficult for an attacker to manipulate a victim into completing the session.&lt;&#x2F;p&gt;
+&lt;p&gt;It is best practice to provide the user the option to switch between using the same and other device. Another approach is to also provide the option to abort a BankID session.&lt;&#x2F;p&gt;
+&lt;p&gt;Going forward, this post will focus on how to open the BankID application on the same device, through a button, and especially how to create its URL.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;technical-basis&quot;&gt;Technical basis&lt;&#x2F;h2&gt;
+&lt;p&gt;The &lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;developers.bankid.com&#x2F;how-to-guides&#x2F;autostart&quot;&gt;official documentation for implementing frontend&lt;&#x2F;a&gt; is light on detail in the &lt;em&gt;launching from a browser&lt;&#x2F;em&gt; section.&lt;&#x2F;p&gt;
+&lt;p&gt;Next, we will explore how to create a same-device URL.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;uri-schemes&quot;&gt;URI schemes&lt;&#x2F;h3&gt;
+&lt;p&gt;There are two ways, URI schemes, of launching the BankID application in a browser. These are:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;bankid:&#x2F;&#x2F;&#x2F;?autostarttoken=[TOKEN]&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;https:&#x2F;&#x2F;app.bankid.com&#x2F;?autostarttoken=[TOKEN]&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;BankID &lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;developers.bankid.com&#x2F;how-to-guides&#x2F;autostart&quot;&gt;states&lt;&#x2F;a&gt; that the first works for all browsers on PC, and the second for mobile devices such as iOS and Android. In practice, compatibility varies depending on the browser and operating system combination, necessitating custom configuration for optimal end user experience.&lt;&#x2F;p&gt;
+&lt;p&gt;If the BankID app fails to open when using the second option, &lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;app.bankid.com&#x2F;&quot;&gt;this page&lt;&#x2F;a&gt; is displayed in the browser for the end user, which includes information for ends user on how to solve the issue. See below how to prevent this from happening consistently for certain operating systems and browsers.&lt;&#x2F;p&gt;
+&lt;p&gt;The autostart token, &lt;code&gt;[TOKEN]&lt;&#x2F;code&gt; in examples, is a &lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Universally_unique_identifier&quot;&gt;UUID&#x2F;GUID&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;ui-texts&quot;&gt;UI texts&lt;&#x2F;h3&gt;
+&lt;p&gt;BankID has &lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;developers.bankid.com&#x2F;ui-resources&#x2F;user-messages&quot;&gt;recommended text messages&lt;&#x2F;a&gt; to be displayed for the end user in different states. In addition to these, you can also look at &lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;test.bankid.com&#x2F;&quot;&gt;test BankID&lt;&#x2F;a&gt; as a source of inspiration for text that can be seen as more aligned with official messaging.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;implementing-launch&quot;&gt;Implementing launch&lt;&#x2F;h2&gt;
+&lt;p&gt;First, we use the User-Agent string to identify the user’s operating system and browser. This will be used for the &lt;a href=&quot;https:&#x2F;&#x2F;blog.stranne.se&#x2F;launch-swedish-bankid-from-a-browser-using-autostart-token&#x2F;#returnurl&quot;&gt;returnUrl&lt;&#x2F;a&gt;-value and selecting which &lt;a href=&quot;https:&#x2F;&#x2F;blog.stranne.se&#x2F;launch-swedish-bankid-from-a-browser-using-autostart-token&#x2F;#uri-schemes&quot;&gt;URI-scheme&lt;&#x2F;a&gt; to use.&lt;&#x2F;p&gt;
+&lt;p&gt;There are two ways of opening the BankID application.&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;Autostart the app (optional)&lt;&#x2F;li&gt;
+&lt;li&gt;User clicks on a button&#x2F;link to open it&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;Different operating systems and browser combinations have different limitations, and not both options will work for all. Open this &lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;stranne.github.io&#x2F;swedish-bankid-launch-tester&#x2F;&quot;&gt;tool&lt;&#x2F;a&gt; on different devices’ browsers to see how they behave when launching the app. See the in-depth description below for future details.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;identify-operating-system-and-browser&quot;&gt;Identify operating system and browser&lt;&#x2F;h3&gt;
+&lt;p&gt;When identifying which device the user is using, you can use the &lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;developer.mozilla.org&#x2F;en-US&#x2F;docs&#x2F;Web&#x2F;HTTP&#x2F;Headers&#x2F;User-Agent&quot;&gt;User-Agent&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;There is a new API, experimental as of October 2024, called &lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;developer.mozilla.org&#x2F;en-US&#x2F;docs&#x2F;Web&#x2F;API&#x2F;User-Agent_Client_Hints_API&quot;&gt;User-Agent Client Hints API&lt;&#x2F;a&gt;. Probably best to combine this with User-Agent as a fallback, if going with this approach, until &lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;caniuse.com&#x2F;mdn-api_navigator_useragentdata&quot;&gt;support&lt;&#x2F;a&gt; improves.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;identify-ipad&quot;&gt;Identify iPad&lt;&#x2F;h3&gt;
+&lt;p&gt;Be aware that iPads can easily be misinterpreted as macOS devices, based on their User-Agent. See the second example below.&lt;&#x2F;p&gt;
+&lt;p&gt;iPad user agent examples:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;Mozilla&#x2F;5.0 (**iPad**; U; CPU OS OS 3_2 like Mac OS X; en-us) AppleWebKit&#x2F;531.21.10 (KHTML, like Gecko) Version&#x2F;4.0.4 Mobile&#x2F;7B367 Safari&#x2F;531.21.10&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;Mozilla&#x2F;5.0 (Macintosh; Intel Mac OS X 10_15) AppleWebKit&#x2F;605.1.15 (KHTML, like Gecko) Version&#x2F;13.0 Safari&#x2F;605.1.15&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;To differentiate iPads from macOS devices based on their User-Agent, you can check if multi-touch is supported using the following JavaScript code: &lt;code&gt;navigator &amp;amp;&amp;amp; navigator.maxTouchPoints &amp;gt; 1&lt;&#x2F;code&gt;. This logic is also utilized in the &lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.npmjs.com&#x2F;package&#x2F;is-mobile&quot;&gt;is-mobile NPM package&lt;&#x2F;a&gt;, which forms the basis for the &lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;BankID&#x2F;SampleCode&quot;&gt;BankID sample code&lt;&#x2F;a&gt;, which were archived in March 20’th of 2025.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;iframe&quot;&gt;iframe&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;app.bankid.com&#x2F;&quot;&gt;https:&#x2F;&#x2F;app.bankid.com&#x2F;&lt;&#x2F;a&gt; blocks iframes with the http header &lt;em&gt;&lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;developer.mozilla.org&#x2F;en-US&#x2F;docs&#x2F;Web&#x2F;HTTP&#x2F;Headers&#x2F;X-Frame-Options&quot;&gt;X-Frame-Options&lt;&#x2F;a&gt;: DENY&lt;&#x2F;em&gt;, as well as their &lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;developer.mozilla.org&#x2F;en-US&#x2F;docs&#x2F;Web&#x2F;HTTP&#x2F;CSP&quot;&gt;content security policy&lt;&#x2F;a&gt; configuration of &lt;em&gt;default-src ‘self’&lt;&#x2F;em&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;When using &lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;developer.mozilla.org&#x2F;en-US&#x2F;docs&#x2F;Web&#x2F;HTML&#x2F;Element&#x2F;iframe#sandbox&quot;&gt;sandbox&lt;&#x2F;a&gt;-attribute one has to specify &lt;em&gt;allow-top-navigation&lt;&#x2F;em&gt; to allow the &lt;code&gt;bankid:&#x2F;&#x2F;&lt;&#x2F;code&gt; URL to be able&#x2F;allowed to open the external app. Using iframe will prevent the app from starting on some browsers, compare to using a direct link or assigning the URL via &lt;em&gt;window.location&lt;&#x2F;em&gt;. Personally, I do not see that this option would add much security, but some security experts may see some benefits, even for custom URI schemes.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;autostart&quot;&gt;Autostart&lt;&#x2F;h3&gt;
+&lt;p&gt;You can use &lt;em&gt;window.location&lt;&#x2F;em&gt; to specify to launch the URL. An alternative is to create a link which you programmatically trigger the click event. However, this can be blocked, especially if this is not triggered in relation to a user interaction.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;open-on-ios&quot;&gt;Open on iOS&lt;&#x2F;h2&gt;
+&lt;p&gt;iOS has a restricted behavior regarding opening external applications. Therefore, you need to use the &lt;code&gt;https:&#x2F;&#x2F;app.bankid.com&#x2F;?autostarttoken=[TOKEN]&lt;&#x2F;code&gt; URL, while also providing the &lt;em&gt;returnUrl&lt;&#x2F;em&gt; value when requesting BankID session. This returnUrl value helps to go back to the webpage after the user has finished in the BankID application.&lt;&#x2F;p&gt;
+&lt;p&gt;There are a few things to be aware of when creating this URL.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;returnurl&quot;&gt;returnUrl&lt;&#x2F;h3&gt;
+&lt;p&gt;For iOS you need a returnUrl value to handle the case with non Safari browsers. For other operating systems, this value can be left empty. If this value is missing, the end user will be left in the BankID app after completion on iOS. Note that the URL used as this value depends on which browser the user is using, see &lt;a href=&quot;https:&#x2F;&#x2F;blog.stranne.se&#x2F;launch-swedish-bankid-from-a-browser-using-autostart-token&#x2F;#browser-uri-schemes&quot;&gt;below&lt;&#x2F;a&gt; for details.&lt;&#x2F;p&gt;
+&lt;p&gt;It can also be set as a query parameter to the launch URL, &lt;code&gt;redirect=[REDIRECT]&lt;&#x2F;code&gt;, but this is now deprecated and should now be entered when requesting a new BankID session. If returnUrl is set when requesting a new session, any redirect query in the URL will be ignored. It is currently unclear how long the deprecated URL parameter will be supported, consult the &lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;developers.bankid.com&#x2F;how-to-guides&#x2F;autostart&quot;&gt;BankID technical documentation&lt;&#x2F;a&gt; for the latest information.&lt;&#x2F;p&gt;
+&lt;h4 id=&quot;url-encoded&quot;&gt;URL encoded&lt;&#x2F;h4&gt;
+&lt;p&gt;Previously, when using the redirect value in the URL, it was part of a query parameter and needed to be encoded. It could be done with JavaScript; &lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;developer.mozilla.org&#x2F;en-US&#x2F;docs&#x2F;Web&#x2F;JavaScript&#x2F;Reference&#x2F;Global_Objects&#x2F;encodeURI&quot;&gt;encodeURI()&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;As an example, the return URL &lt;code&gt;https:&#x2F;&#x2F;example.com&#x2F;sign-in&#x2F;&lt;&#x2F;code&gt; should be encoded to &lt;code&gt;https%3A%2F%2Fexample.com%2Fsign-in%2F&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;fragment-identifier&quot;&gt;Fragment identifier&lt;&#x2F;h3&gt;
+&lt;p&gt;For iOS return flows, use a fragment (&lt;code&gt;#&lt;&#x2F;code&gt;) in the return URL (for example, &lt;code&gt;https:&#x2F;&#x2F;example.com&#x2F;sign-in&#x2F;#&lt;&#x2F;code&gt;) so the user returns to the same page state without a full reload.&lt;&#x2F;p&gt;
+&lt;p&gt;Without the fragment, returning from the BankID app may trigger a full page load. In setups that rely on in-memory client state, that reload can interrupt the ongoing BankID flow.&lt;&#x2F;p&gt;
+&lt;p&gt;If your session cookie uses &lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;developer.mozilla.org&#x2F;en-US&#x2F;docs&#x2F;Web&#x2F;HTTP&#x2F;Reference&#x2F;Headers&#x2F;Set-Cookie#strict&quot;&gt;&lt;code&gt;SameSite=Strict&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;, the return navigation may result in a new session depending on browser behavior and cookie policy, which can break ongoing signing state handling.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;browser-uri-schemes&quot;&gt;Browser URI schemes&lt;&#x2F;h3&gt;
+&lt;p&gt;iOS will default to the Safari browser. If a user is using Chrome on iOS, if not handle specifically, the user will get redirected to the specified page in Safari, instead of Chrome. Since that browser will not have access to the homepage’s session, it should fail processing the BankId session. Therefore, make sure to also include the URL scheme for the browser that is being used on iOS. You need to identify each browser, you want to support on iOS, and specify the correct URI scheme to open that specific browser when end user has completed the request in the BankID app. You can see statistics of browsers popularity for countries and operating system &lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;radar.cloudflare.com&#x2F;reports&#x2F;browser-market-share-2025-q4#id-8-market-share-by-country-and-os&quot;&gt;here&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;Some browsers support URI scheme to open the app with the previous displayed web page. To ensure the expected result, specify the URL which the user should be redirected to. There is a risk that the user will be shown the &lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;app.bankid.com&#x2F;&quot;&gt;https:&#x2F;&#x2F;app.bankid.com&#x2F;&lt;&#x2F;a&gt; otherwise, and might not consider clicking back to get to your homepage again.&lt;&#x2F;p&gt;
+&lt;p&gt;In the table below, replace &lt;code&gt;[URL]&lt;&#x2F;code&gt; with the return url, such as &lt;code&gt;https:&#x2F;&#x2F;example.com&#x2F;sign-in&#x2F;&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Browser&lt;&#x2F;th&gt;&lt;th&gt;Open app URI&lt;&#x2F;th&gt;&lt;th&gt;Open app with specific page URI&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;Chrome&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;googlechrome:&#x2F;&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;googlechrome:&#x2F;&#x2F;[URL]&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Firefox&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;firefox:&#x2F;&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;firefox:&#x2F;&#x2F;[URL]&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Edge&lt;&#x2F;td&gt;&lt;td&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;microsoft-edge-[URL]&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Brave&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;brave:&#x2F;&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;brave:&#x2F;&#x2F;open-url?url=[URL]&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;DuckDuckGo&lt;&#x2F;td&gt;&lt;td&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;ddgQuickLink:&#x2F;&#x2F;[URL]&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Opera Touch&lt;&#x2F;td&gt;&lt;td&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;touch-[URL]&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;Arc Browser&lt;&#x2F;td&gt;&lt;td&gt;&lt;&#x2F;td&gt;&lt;td&gt;&lt;code&gt;arcmobile2:&#x2F;&#x2F;[URL]&lt;&#x2F;code&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;List of wide range of iOS URI Schemes for third-party applications can be found at &lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;davidblue.wtf&#x2F;urlschemes&#x2F;&quot;&gt;https:&#x2F;&#x2F;davidblue.wtf&#x2F;urlschemes&#x2F;&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;Be aware that while Arc Browser has a URI Scheme to open it, I have not personally found a way to identify this browsers from others, probably due to privacy concern, making it impossible to know when to use it.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;examples&quot;&gt;Examples&lt;&#x2F;h3&gt;
+&lt;p&gt;Putting this all together for &lt;code&gt;https:&#x2F;&#x2F;example.com&#x2F;sign-in&#x2F;&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;Launch URL will always be &lt;code&gt;https:&#x2F;&#x2F;app.bankid.com&#x2F;?autostarttoken=[TOKEN]&lt;&#x2F;code&gt; for iOS and only the returnUrl will differ.&lt;&#x2F;p&gt;
+&lt;p&gt;iOS with Safari:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;returnUrl: &lt;code&gt;https:&#x2F;&#x2F;example.com&#x2F;sign-in&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;iOS with Chrome:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;returnUrl: &lt;code&gt;googlechrome:&#x2F;&#x2F;https:&#x2F;&#x2F;example.com&#x2F;sign-in&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;iOS with Edge:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;returnUrl: &lt;code&gt;microsoft-edge-https:&#x2F;&#x2F;example.com&#x2F;sign-in&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;open-on-android&quot;&gt;Open on Android&lt;&#x2F;h2&gt;
+&lt;p&gt;BankID’s developer documentation states that &lt;code&gt;https:&#x2F;&#x2F;app.bankid.com&#x2F;&lt;&#x2F;code&gt; URL scheme should be used for Android devices. Signicat, an identity solution provider, &lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;developer.signicat.com&#x2F;identity-methods&#x2F;sbid&#x2F;integration-guide&#x2F;auth-rest-api&#x2F;headless&#x2F;#field-descriptions-1&quot;&gt;states&lt;&#x2F;a&gt; that modern Android should use the URI, while Android 4 &amp;amp; 5 should use &lt;code&gt;bankid:&#x2F;&#x2F;&lt;&#x2F;code&gt; URI scheme instead.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;browser-details&quot;&gt;Browser details&lt;&#x2F;h3&gt;
+&lt;p&gt;Different browsers behave differently on Android. Therefore, testing browser behavior is crucial for ensuring the consistency launching of bankID application. See the table comparison below, tested on Android 11 (as of October 2024). The launch method (direct link vs &lt;code&gt;window.location&lt;&#x2F;code&gt;) was tested and produced identical results — only the URI scheme matters.&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Browser&lt;&#x2F;th&gt;&lt;th&gt;&lt;code&gt;bankid:&#x2F;&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;th&gt;&lt;th&gt;&lt;code&gt;https:&#x2F;&#x2F;app.bankid.com&#x2F;&lt;&#x2F;code&gt;&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;play.google.com&#x2F;store&#x2F;apps&#x2F;details?id=com.android.chrome&quot;&gt;Chrome&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;play.google.com&#x2F;store&#x2F;apps&#x2F;details?id=org.mozilla.firefox&quot;&gt;Firefox&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;✅ &lt;a href=&quot;https:&#x2F;&#x2F;blog.stranne.se&#x2F;launch-swedish-bankid-from-a-browser-using-autostart-token&#x2F;#firefox&quot;&gt;Dialog&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;✅ &lt;a href=&quot;https:&#x2F;&#x2F;blog.stranne.se&#x2F;launch-swedish-bankid-from-a-browser-using-autostart-token&#x2F;#firefox&quot;&gt;Dialog&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;play.google.com&#x2F;store&#x2F;apps&#x2F;details?id=com.microsoft.emmx&quot;&gt;Edge&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;⚠️ &lt;a href=&quot;https:&#x2F;&#x2F;blog.stranne.se&#x2F;launch-swedish-bankid-from-a-browser-using-autostart-token&#x2F;#edge&quot;&gt;Bottom dialog&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;play.google.com&#x2F;store&#x2F;apps&#x2F;details?id=com.duckduckgo.mobile.android&quot;&gt;DuckDuckGo&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;✅ &lt;a href=&quot;https:&#x2F;&#x2F;blog.stranne.se&#x2F;launch-swedish-bankid-from-a-browser-using-autostart-token&#x2F;#duckduckgo&quot;&gt;Dialog&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;⚠️ &lt;a href=&quot;https:&#x2F;&#x2F;blog.stranne.se&#x2F;launch-swedish-bankid-from-a-browser-using-autostart-token&#x2F;#duckduckgo&quot;&gt;Bottom dialog&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;play.google.com&#x2F;store&#x2F;apps&#x2F;details?id=com.sec.android.app.sbrowser&quot;&gt;Samsung Internet&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;❌ &lt;a href=&quot;https:&#x2F;&#x2F;blog.stranne.se&#x2F;launch-swedish-bankid-from-a-browser-using-autostart-token&#x2F;#samsung-internet-browser&quot;&gt;Not supported&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;play.google.com&#x2F;store&#x2F;apps&#x2F;details?id=com.opera.browser&quot;&gt;Opera&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;play.google.com&#x2F;store&#x2F;apps&#x2F;details?id=com.brave.browser&quot;&gt;Brave&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;td&gt;✅&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;Use &lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;stranne.github.io&#x2F;swedish-bankid-launch-tester&#x2F;&quot;&gt;this simple test tool&lt;&#x2F;a&gt; to evaluate different devices and their browsers.&lt;&#x2F;p&gt;
+&lt;h4 id=&quot;firefox&quot;&gt;Firefox&lt;&#x2F;h4&gt;
+
+
+
+&lt;div class=&quot;figure-detail glass-subtle&quot;&gt;
+    &lt;a href=&quot;https:&amp;#x2F;&amp;#x2F;blog.stranne.se&amp;#x2F;processed_images&amp;#x2F;screenshot_android_firefox.d4707f60f3234367.webp&quot; class=&quot;lightbox-trigger figure-detail-img&quot; aria-label=&quot;View larger image: Android Firefox prompt dialog&quot;&gt;
+        &lt;img src=&quot;https:&amp;#x2F;&amp;#x2F;blog.stranne.se&amp;#x2F;processed_images&amp;#x2F;screenshot_android_firefox.d6cfa188867fb954.webp&quot; alt=&quot;Android Firefox prompt dialog&quot; width=&quot;120&quot; height=&quot;255&quot; loading=&quot;lazy&quot; class=&quot;post-thumb&quot;&gt;
+    &lt;&#x2F;a&gt;
+    &lt;div class=&quot;figure-detail-text&quot;&gt;&lt;p&gt;Same behavior for all combinations, where the user is prompted. If user declines, nothing happens for &lt;code&gt;bankid:&#x2F;&#x2F;&lt;&#x2F;code&gt;, and the site is shown for &lt;code&gt;https:&#x2F;&#x2F;app.bankid.com&#x2F;&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;h4 id=&quot;edge&quot;&gt;Edge&lt;&#x2F;h4&gt;
+
+
+
+&lt;div class=&quot;figure-detail glass-subtle&quot;&gt;
+    &lt;a href=&quot;https:&amp;#x2F;&amp;#x2F;blog.stranne.se&amp;#x2F;processed_images&amp;#x2F;screenshot_android_edge.56fa3c5a78b3ef04.webp&quot; class=&quot;lightbox-trigger figure-detail-img&quot; aria-label=&quot;View larger image: Android Edge prompt dialog&quot;&gt;
+        &lt;img src=&quot;https:&amp;#x2F;&amp;#x2F;blog.stranne.se&amp;#x2F;processed_images&amp;#x2F;screenshot_android_edge.1aca40c458c0d928.webp&quot; alt=&quot;Android Edge prompt dialog&quot; width=&quot;120&quot; height=&quot;255&quot; loading=&quot;lazy&quot; class=&quot;post-thumb&quot;&gt;
+    &lt;&#x2F;a&gt;
+    &lt;div class=&quot;figure-detail-text&quot;&gt;&lt;p&gt;When using URL scheme &lt;code&gt;https:&#x2F;&#x2F;app.bankid.com&#x2F;&lt;&#x2F;code&gt;, the user is prompted and asked if they would like to open the external app until they select remember.&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;h4 id=&quot;duckduckgo&quot;&gt;DuckDuckGo&lt;&#x2F;h4&gt;
+
+
+
+&lt;div class=&quot;figure-detail glass-subtle&quot;&gt;
+    &lt;a href=&quot;https:&amp;#x2F;&amp;#x2F;blog.stranne.se&amp;#x2F;processed_images&amp;#x2F;screenshot_android_duckduckgo_1.05ee0b7bad289f0e.webp&quot; class=&quot;lightbox-trigger figure-detail-img&quot; aria-label=&quot;View larger image: Android DuckDuckGo prompt for bankid URI&quot;&gt;
+        &lt;img src=&quot;https:&amp;#x2F;&amp;#x2F;blog.stranne.se&amp;#x2F;processed_images&amp;#x2F;screenshot_android_duckduckgo_1.1717911a0b18306d.webp&quot; alt=&quot;Android DuckDuckGo prompt for bankid URI&quot; width=&quot;120&quot; height=&quot;255&quot; loading=&quot;lazy&quot; class=&quot;post-thumb&quot;&gt;
+    &lt;&#x2F;a&gt;
+    &lt;div class=&quot;figure-detail-text&quot;&gt;&lt;p&gt;There is a prompt displayed for &lt;code&gt;bankid:&#x2F;&#x2F;&lt;&#x2F;code&gt; URI Scheme.&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+
+
+
+&lt;div class=&quot;figure-detail glass-subtle&quot;&gt;
+    &lt;a href=&quot;https:&amp;#x2F;&amp;#x2F;blog.stranne.se&amp;#x2F;processed_images&amp;#x2F;screenshot_android_duckduckgo_2.5a63c33c3efad3df.webp&quot; class=&quot;lightbox-trigger figure-detail-img&quot; aria-label=&quot;View larger image: Android DuckDuckGo prompt for https URI&quot;&gt;
+        &lt;img src=&quot;https:&amp;#x2F;&amp;#x2F;blog.stranne.se&amp;#x2F;processed_images&amp;#x2F;screenshot_android_duckduckgo_2.a7c81f88f1e45ef9.webp&quot; alt=&quot;Android DuckDuckGo prompt for https URI&quot; width=&quot;120&quot; height=&quot;255&quot; loading=&quot;lazy&quot; class=&quot;post-thumb&quot;&gt;
+    &lt;&#x2F;a&gt;
+    &lt;div class=&quot;figure-detail-text&quot;&gt;&lt;p&gt;For URL scheme &lt;code&gt;https:&#x2F;&#x2F;app.bankid.com&#x2F;&lt;&#x2F;code&gt; the user is prompted with a discrete options at the bottom of the &lt;code&gt;https:&#x2F;&#x2F;app.bankid.com&#x2F;&lt;&#x2F;code&gt; page, as seen below.&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;h4 id=&quot;samsung-internet-browser&quot;&gt;Samsung Internet Browser&lt;&#x2F;h4&gt;
+&lt;p&gt;This browser does not support &lt;code&gt;https:&#x2F;&#x2F;app.bankid.com&#x2F;&lt;&#x2F;code&gt; URL scheme. It only displays the page without any option to open the external BankID app. Only use &lt;code&gt;bankid:&#x2F;&#x2F;&lt;&#x2F;code&gt; for this browser.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;examples-1&quot;&gt;Examples&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;bankid:&#x2F;&#x2F;&#x2F;?autostarttoken=[TOKEN]&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;https:&#x2F;&#x2F;app.bankid.com&#x2F;?autostarttoken=[TOKEN]&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;open-on-desktop-windows-macos&quot;&gt;Open on Desktop (Windows &amp;amp; macOS)&lt;&#x2F;h2&gt;
+&lt;p&gt;For desktop, it is straight forward. Use &lt;code&gt;bankid:&#x2F;&#x2F;&#x2F;?autostarttoken=[TOKEN]&lt;&#x2F;code&gt; to open the application.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;example&quot;&gt;Example&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;bankid:&#x2F;&#x2F;&#x2F;?autostarttoken=[TOKEN]&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;changelog&quot;&gt;Changelog&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;2026-04-01: Simplified the Android browser compatibility table and restructured browser-specific details under &lt;em&gt;Open on Android&lt;&#x2F;em&gt;.&lt;&#x2F;li&gt;
+&lt;li&gt;2026-03-08: Updated and corrected links. Clarified iOS return flow behavior and &lt;code&gt;SameSite=Strict&lt;&#x2F;code&gt; session implications under &lt;em&gt;Fragment identifier&lt;&#x2F;em&gt;.&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;disclaimer&quot;&gt;Disclaimer&lt;&#x2F;h2&gt;
+&lt;p&gt;This information is provided as is. Follow your own judgment and official documentation.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;additional-resources&quot;&gt;Additional resources&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.bankid.com&#x2F;en&quot;&gt;Official homepage&lt;&#x2F;a&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.bankid.com&#x2F;en&#x2F;privat&#x2F;skaffa-bankid&quot;&gt;Get personal BankID&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;support.bankid.com&#x2F;en&#x2F;technical-issues-and-problems&#x2F;system-requirements&quot;&gt;System requirements&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;developers.bankid.com&#x2F;&quot;&gt;Developer documentation&lt;&#x2F;a&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;developers.bankid.com&#x2F;api-references&#x2F;auth--sign&#x2F;overview&quot;&gt;Backend API references&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;developers.bankid.com&#x2F;how-to-guides&#x2F;autostart&quot;&gt;Frontend: Autostart&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;developers.bankid.com&#x2F;how-to-guides&#x2F;qr-code&quot;&gt;Frontend: QR code&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;developers.bankid.com&#x2F;resources&#x2F;user-messages&quot;&gt;Recommended user messages&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;developers.bankid.com&#x2F;test-portal&#x2F;test-information&quot;&gt;Testing&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;developers.bankid.com&#x2F;getting-started&#x2F;use-cases&quot;&gt;Use cases&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;www.bankid.com&#x2F;demo&quot;&gt;Demo&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;developers.bankid.com&#x2F;test-portal&#x2F;testing&quot;&gt;Demo Bank&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;bankid&quot;&gt;GitHub&lt;&#x2F;a&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a rel=&quot;noopener noreferrer external&quot; target=&quot;_blank&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;BankID&#x2F;SampleCode&quot;&gt;Sample code (Archived)&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+</description>
+      </item>
+    </channel>
+</rss>
