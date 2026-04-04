@@ -364,6 +364,10 @@ a {
     }
 }
 
+.tag-name {
+    font-weight: 500;
+}
+
 .tag-count {
     font-size: 0.75rem;
     color: var(--text-muted);
@@ -410,10 +414,6 @@ a {
     gap: 0.3rem 0.5rem;
     font-size: 0.88rem;
     color: var(--text-secondary);
-}
-
-.post-author {
-    font-weight: 500;
 }
 
 .post-tags {
