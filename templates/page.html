@@ -3,6 +3,22 @@
 {% block title %}{{ page.title }} | {{ config.title }}{% endblock %}
 {% block description %}{{ page.description | default(value=config.description) }}{% endblock %}
 
+{% block opengraph %}
+<meta property="og:title" content="{{ page.title }}">
+<meta property="og:description" content="{{ page.description | default(value=config.description) }}">
+<meta property="og:type" content="article">
+<meta property="og:url" content="{{ page.permalink }}">
+<meta property="og:site_name" content="{{ config.title }}">
+<meta property="article:published_time" content="{{ page.date | date(format='%Y-%m-%d') }}">
+<meta property="article:author" content="{{ config.extra.author_name }}">
+{% if page.taxonomies.tags %}{% for tag in page.taxonomies.tags %}
+<meta property="article:tag" content="{{ tag }}">
+{% endfor %}{% endif %}
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="{{ page.title }}">
+<meta name="twitter:description" content="{{ page.description | default(value=config.description) }}">
+{% endblock opengraph %}
+
 {% block scripts %}
 {% if page.toc %}
 <script src="/js/toc.js" defer></script>
