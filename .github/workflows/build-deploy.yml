@@ -1,0 +1,37 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  schedule:
+    # Run at 00:00 UTC on the first of January to update copyright year
+    - cron: '0 0 1 1 *'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Build and deploy
+        if: github.event_name != 'pull_request'
+        uses: shalzz/zola-deploy-action@v0.22.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BUILD_DIR: .
+          PAGES_BRANCH: gh-pages
+
+      - name: Build only (PR validation)
+        if: github.event_name == 'pull_request'
+        uses: shalzz/zola-deploy-action@v0.22.1
+        env:
+          BUILD_ONLY: true
+          BUILD_DIR: .
