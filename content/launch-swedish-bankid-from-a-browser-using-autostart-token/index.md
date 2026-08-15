@@ -214,25 +214,25 @@ Use [this simple test tool](https://stranne.github.io/swedish-bankid-launch-test
 
 #### Firefox
 
-{% figure_detail(src="screenshot_android_firefox.png", alt="Android Firefox prompt dialog") %}
+{% <figure src="screenshot_android_firefox.png" alt="Android Firefox prompt dialog" page={page}> %}
 Same behavior for all combinations, where the user is prompted. If user declines, nothing happens for `bankid://`, and the site is shown for `https://app.bankid.com/`.
-{% end %}
+{% </figure> %}
 
 #### Edge
 
-{% figure_detail(src="screenshot_android_edge.png", alt="Android Edge prompt dialog") %}
+{% <figure src="screenshot_android_edge.png" alt="Android Edge prompt dialog" page={page}> %}
 When using URL scheme `https://app.bankid.com/`, the user is prompted and asked if they would like to open the external app until they select remember.
-{% end %}
+{% </figure> %}
 
 #### DuckDuckGo
 
-{% figure_detail(src="screenshot_android_duckduckgo_1.png", alt="Android DuckDuckGo prompt for bankid URI") %}
+{% <figure src="screenshot_android_duckduckgo_1.png" alt="Android DuckDuckGo prompt for bankid URI" page={page}> %}
 There is a prompt displayed for `bankid://` URI Scheme.
-{% end %}
+{% </figure> %}
 
-{% figure_detail(src="screenshot_android_duckduckgo_2.png", alt="Android DuckDuckGo prompt for https URI") %}
+{% <figure src="screenshot_android_duckduckgo_2.png" alt="Android DuckDuckGo prompt for https URI" page={page}> %}
 For URL scheme `https://app.bankid.com/` the user is prompted with a discrete options at the bottom of the `https://app.bankid.com/` page, as seen below.
-{% end %}
+{% </figure> %}
 
 #### Samsung Internet Browser
 
