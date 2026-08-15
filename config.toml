@@ -21,7 +21,6 @@ external_links_no_follow = false
 external_links_no_referrer = true
 smart_punctuation = true
 [markdown.highlighting]
-enabled = true
 theme = "material-theme-ocean"
 
 [slugify]
